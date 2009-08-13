@@ -137,15 +137,30 @@ module Synthesis
         end
       end
 
-      def merged_file
+      # def merged_file
+      #   merged_file = ""
+      #   @sources.each {|s| 
+      #     File.open("#{@asset_path}/#{s}.#{@extension}", "r") { |f| 
+      #       merged_file += f.read + "\n" 
+      #     }
+      #   }
+      #   merged_file
+      # end
+
+      def merged_file      
         merged_file = ""
         @sources.each {|s| 
-          File.open("#{@asset_path}/#{s}.#{@extension}", "r") { |f| 
+          
+          #allow full path sources
+          type = @asset_path.split('/').last
+          file = s.include?(type) ? "#{@asset_path.sub("/#{type}", '')}#{s}" : "#{@asset_path}/#{s}.#{@extension}"          
+          File.open(file, "r") { |f| 
             merged_file += f.read + "\n" 
-          }
+          }                    
         }
-        merged_file
-      end
+        merged_file        
+      end      
+
     
       def compressed_file
         case @asset_type
@@ -177,11 +192,11 @@ module Synthesis
   
       def compress_css(source)
         source.gsub!(/\s+/, " ")           # collapse space
-        source.gsub!(/\/\*(.*?)\*\//, "")  # remove comments - caution, might want to remove this if using css hacks
+        # source.gsub!(/\/\*(.*?)\*\//, "")  # remove comments - caution, might want to remove this if using css hacks
         source.gsub!(/\} /, "}\n")         # add line breaks
         source.gsub!(/\n$/, "")            # remove last break
         source.gsub!(/ \{ /, " {")         # trim inside brackets
-        source.gsub!(/; \}/, "}")          # trim inside brackets
+        # source.gsub!(/; \}/, "}")          # trim inside brackets
         source
       end
 
